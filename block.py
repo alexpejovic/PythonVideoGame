@@ -187,7 +187,7 @@ class Block:
         <position> is the (x, y) coordinates of the upper-left corner of this
         Block.
         """
-        return "Sofija and Alex are sooo cool"
+        # TODO: Implement this method
 
     def smashable(self) -> bool:
         """Return True iff this block can be smashed.
