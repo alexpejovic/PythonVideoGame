@@ -187,7 +187,11 @@ class Block:
         <position> is the (x, y) coordinates of the upper-left corner of this
         Block.
         """
-        # TODO: Implement this method
+        self.position = position
+        child_postions = self._children_positions()
+        if len(self.children) == 4:
+            for i in range(4):
+                self.children[i]._update_children_positions(child_postions[i])
 
     def smashable(self) -> bool:
         """Return True iff this block can be smashed.
