@@ -47,9 +47,23 @@ def create_players(num_human: int, num_random: int, smart_players: List[int]) \
     <smart_players> should be applied to each SmartPlayer object, in order.
     """
     # TODO: Implement Me
-    goals = generate_goals(1)  # FIXME
-    return [HumanPlayer(0, goals[0])]  # FIXME
-
+    #goals = generate_goals(1)  # FIXME
+    #return [HumanPlayer(0, goals[0])]  # FIXME
+    g = generate_goals(len(smart_players) + num_human + num_random)
+    lst = []
+    for i in range(num_human):
+        player_i = HumanPlayer(i, g[i])
+        lst.append(player_i)
+    for j in range(num_human, num_human + num_random):
+        player_j = RandomPlayer(j, g[j])
+        lst.append(player_j)
+    s = 0
+    for k in range(num_random+num_human, num_human + num_random +
+                                         len(smart_players)):
+        player_k = SmartPlayer(k, g[k], smart_players[s])
+        lst.append(player_k)
+        s += 1
+    return lst
 
 def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
         Optional[Block]:
@@ -69,8 +83,31 @@ def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
     Preconditions:
         - 0 <= level <= max_depth
     """
-    # TODO: Implement me
-    return None  # FIXME
+
+    if location_in_block(block, location):
+        if block.level == level:
+            return block
+
+        else:
+
+            for child in block.children:
+                if _get_block(child, location, level) is not None:
+                    return _get_block(child, location, level)
+
+            if level > block.max_depth:
+                for child in block.children:
+                    if child.level == child.max_depth:
+                        return child
+
+
+def location_in_block(block: Block, location: Tuple[int, int]) -> bool:
+    """ Return True if location is contained within the block, i.e if the
+    coordinate pairs of location fall under the area made of block.position x
+    and y coordinates. If location is outside of block.position return False."""
+    first_return = block.position[0] <= location[0] < block.position[0] + \
+                   block.size
+    second_return = block.position[1] <= location[1] < block.position[1] + block.size
+    return first_return and second_return
 
 
 class Player:
