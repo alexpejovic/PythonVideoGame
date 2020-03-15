@@ -151,8 +151,7 @@ class BlobGoal(Goal):
         Update <visited> so that all cells that are visited are marked with
         either 0 or 1.
         """
-        # TODO: Implement me
-        pass  # FIXME
+        
 
     def description(self) -> str:
         """Returns a description of the player's goal, in which the player
