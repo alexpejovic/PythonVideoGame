@@ -114,8 +114,16 @@ class PerimeterGoal(Goal):
         return 148  # FIXME
 
     def description(self) -> str:
-        # TODO: Implement me
-        return 'DESCRIPTION'  # FIXME
+        """ Returns a description describing the player's goal
+        of getting as many unit blocks of colour <self.colour> on the
+        perimeter of the game board.
+        """
+        c = colour_name(self.colour)
+        return 'You must aim to put the most possible units of the' \
+               ' colour' + c + ' on the outer perimeter of the board.' \
+               ' Your score is the total number of unit cells of' \
+            ' colour ' + c + ' that are on the perimeter. There is a premium' \
+            ' on corner cells: they count twice towards the score.'
 
 
 class BlobGoal(Goal):
@@ -147,12 +155,13 @@ class BlobGoal(Goal):
         pass  # FIXME
 
     def description(self) -> str:
-        # TODO: Implement me
-        return 'DESCRIPTION'  # FIXME
+        """Returns a description of the player's goal, in which the player
+        must """
 
 
 if __name__ == '__main__':
     import python_ta
+
     python_ta.check_all(config={
         'allowed-import-modules': [
             'doctest', 'python_ta', 'random', 'typing', 'block', 'settings',
