@@ -156,7 +156,14 @@ class BlobGoal(Goal):
 
     def description(self) -> str:
         """Returns a description of the player's goal, in which the player
-        must """
+        must create a connected set of blocks of a single colour
+        """
+        c = colour_name(self.colour)
+        return 'You must aim for the largest “blob” of the colour' + c + '.' \
+               ' A blob is a group of connected blocks with the same colour.' \
+               ' Two blocks are connected if their sides touch; touching' \
+               ' corners doesn’t count. Your score is the number of unit' \
+               ' cells in the largest blob of colour ' + c + ' .'
 
 
 if __name__ == '__main__':
