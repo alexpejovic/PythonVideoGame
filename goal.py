@@ -74,8 +74,23 @@ def _flatten(block: Block) -> List[List[Tuple[int, int, int]]]:
 
     L[0][0] represents the unit cell in the upper left corner of the Block.
     """
-    # TODO: Implement me
-    return []  # FIXME
+    if block.colour is not None:
+        r = 2 ** (block.max_depth - block.level)
+        lst = [[block.colour] * r] * r
+        return lst
+    else:
+        up_right = _flatten(block.children[0])
+        up_left = _flatten(block.children[1])
+        down_left = _flatten(block.children[2])
+        down_right = _flatten(block.children[3])
+        lst = []
+        for i in range(len(up_left)):
+            lst.append(up_left[i] + down_left[i])
+
+        for j in range(len(up_right)):
+            lst.append(up_right[j] + down_right[j])
+
+        return lst
 
 
 class Goal:
@@ -109,6 +124,7 @@ class Goal:
 
 
 class PerimeterGoal(Goal):
+
     def score(self, board: Block) -> int:
         # TODO: Implement me
         return 148  # FIXME
@@ -256,7 +272,6 @@ class BlobGoal(Goal):
             down = False
         return [(left, right), (up, down)]
 
-
     def description(self) -> str:
         """Returns a description of the player's goal, in which the player
         must create a connected set of blocks of a single colour
@@ -279,3 +294,5 @@ if __name__ == '__main__':
         ],
         'max-attributes': 15
     })
+
+
