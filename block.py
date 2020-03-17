@@ -238,8 +238,27 @@ class Block:
 
         Precondition: <direction> is either 0 or 1
         """
-        # TODO: Implement me
-        return True  # FIXME
+        if not self.children:
+            return False
+        else:
+            if direction == 0:
+                up_right = self.children[0]
+                down_right = self.children[3]
+                self.children[0] = self.children[1]
+                self.children[3] = self.children[2]
+                self.children[1] = up_right
+                self.children[2] = down_right
+            else:
+                up_right = self.children[0]
+                up_left = self.children[1]
+                self.children[0] = self.children[3]
+                self.children[1] = self.children[2]
+                self.children[3] = up_right
+                self.children[2] = up_left
+
+            self._update_children_positions(self.position)
+
+        return True
 
     def rotate(self, direction: int) -> bool:
         """Rotate this Block and all its descendants.
@@ -251,8 +270,28 @@ class Block:
 
         Precondition: <direction> is either 1 or 3.
         """
-        # TODO: Implement me
-        return True  # FIXME
+        if not self.children:
+            return False
+        else:
+            if direction == 1:
+                up_right = self.children[0]
+                self.children[0] = self.children[1]
+                self.children[1] = self.children[2]
+                self.children[2] = self.children[3]
+                self.children[3] = up_right
+            else:
+                up_right = self.children[0]
+                self.children[0] = self.children[3]
+                self.children[3] = self.children[2]
+                self.children[2] = self.children[1]
+                self.children[1] = up_right
+
+            self._update_children_positions(self.position)
+
+            for child in self.children:
+                child.rotate(direction)
+
+            return True
 
     def paint(self, colour: Tuple[int, int, int]) -> bool:
         """Change this Block's colour iff it is a leaf at a level of max_depth
@@ -260,8 +299,11 @@ class Block:
 
         Return True iff this Block's colour was changed.
         """
-        # TODO: Implement me
-        return True  # FIXME
+        if self.level == self.max_depth and colour != self.colour:
+            self.colour = colour
+            return True
+        else:
+            return False
 
     def combine(self) -> bool:
         """Turn this Block into a leaf based on the majority colour of its
