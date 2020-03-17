@@ -46,9 +46,7 @@ def create_players(num_human: int, num_random: int, smart_players: List[int]) \
     objects as the length of <smart_players>. The difficulty levels in
     <smart_players> should be applied to each SmartPlayer object, in order.
     """
-    # TODO: Implement Me
-    #goals = generate_goals(1)  # FIXME
-    #return [HumanPlayer(0, goals[0])]  # FIXME
+
     g = generate_goals(len(smart_players) + num_human + num_random)
     lst = []
     for i in range(num_human):
@@ -87,17 +85,16 @@ def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
     if location_in_block(block, location):
         if block.level == level:
             return block
-
+        elif level > block.max_depth:
+            for child in block.children:
+                if child.level == child.max_depth:
+                    return child
         else:
 
             for child in block.children:
                 if _get_block(child, location, level) is not None:
                     return _get_block(child, location, level)
 
-            if level > block.max_depth:
-                for child in block.children:
-                    if child.level == child.max_depth:
-                        return child
 
 
 def location_in_block(block: Block, location: Tuple[int, int]) -> bool:
