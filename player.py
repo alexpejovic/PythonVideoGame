@@ -63,6 +63,7 @@ def create_players(num_human: int, num_random: int, smart_players: List[int]) \
         s += 1
     return lst
 
+
 def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
         Optional[Block]:
     """Return the Block within <block> that is at <level> and includes
@@ -94,7 +95,6 @@ def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
             for child in block.children:
                 if _get_block(child, location, level) is not None:
                     return _get_block(child, location, level)
-
 
 
 def location_in_block(block: Block, location: Tuple[int, int]) -> bool:
@@ -235,7 +235,7 @@ class RandomPlayer(Player):
     _proceed: bool
 
     def __init__(self, player_id: int, goal: Goal) -> None:
-        # TODO: Implement Me
+        Player.__init__(self, player_id, goal)
         self._proceed = False
 
     def get_selected_block(self, board: Block) -> Optional[Block]:
