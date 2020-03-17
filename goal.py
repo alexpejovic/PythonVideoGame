@@ -126,8 +126,30 @@ class Goal:
 class PerimeterGoal(Goal):
 
     def score(self, board: Block) -> int:
-        # TODO: Implement me
-        return 148  # FIXME
+
+        flattened = _flatten(board)
+        s = 0
+
+        for i in range(1, len(flattened) - 1):
+            if flattened[0][i] == self.colour:
+                s += 1
+            if flattened[-1][i] == self.colour:
+                s += 1
+            if flattened[i][0] == self.colour:
+                s += 1
+            if flattened[i][-1] == self.colour:
+                s += 1
+
+        if flattened[0][0] == self.colour:
+            s += 2
+        if flattened[0][-1] == self.colour:
+            s += 2
+        if flattened[-1][0] == self.colour:
+            s += 2
+        if flattened[-1][-1] == self.colour:
+            s += 2
+
+        return s
 
     def description(self) -> str:
         """ Returns a description describing the player's goal
@@ -143,6 +165,7 @@ class PerimeterGoal(Goal):
 
 
 class BlobGoal(Goal):
+
     def score(self, board: Block) -> int:
         n = len(_flatten(board))
         visits = []
