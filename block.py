@@ -318,8 +318,18 @@ class Block:
 
         Return True iff this Block was turned into a leaf node.
         """
+        if len(self.children) == 4 and self.level == self.max_depth - 1:
+            d = {colour: 0 for colour in COLOUR_LIST}
+            for child in self.children:
+                d[child.colour] += 1
 
+            for colour in d:
+                if d[colour] > 2:
+                    self.children = []
+                    self.colour = colour
+                    return True
 
+        return False
 
     def create_copy(self) -> Block:
         """Return a new Block that is a deep copy of this Block.
