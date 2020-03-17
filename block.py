@@ -318,8 +318,8 @@ class Block:
 
         Return True iff this Block was turned into a leaf node.
         """
-        # TODO: Implement me
-        return True  # FIXME
+
+
 
     def create_copy(self) -> Block:
         """Return a new Block that is a deep copy of this Block.

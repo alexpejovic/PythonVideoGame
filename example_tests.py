@@ -200,7 +200,7 @@ class TestRender:
         renderer.save_to_file('reference-rotate-1.png')
 
         # Render what your swap does to the reference board
-        board_16x16.swap(0)
+        board_16x16.children[0].rotate(1)
         renderer.clear()
         renderer.draw_board(_block_to_squares(board_16x16))
         renderer.save_to_file('your-rotate-1.png')
