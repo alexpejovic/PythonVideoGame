@@ -204,96 +204,29 @@ class BlobGoal(Goal):
         either 0 or 1.
         """
         colour = self.colour
-        can_right = self._can_iterate(board, pos[0], pos[1])[0][1]
-        can_down = self._can_iterate(board, pos[0], pos[1])[1][1]
-        can_up = self._can_iterate(board, pos[0], pos[1])[1][0]
-        can_left = self._can_iterate(board, pos[0], pos[1])[0][0]
-        upper_left = (not can_left) and (not can_up)
-        upper_right = (not can_right) and (not can_up)
-        lower_left = (not can_left) and (not can_down)
-        lower_right = (not can_right) and (not can_down)
-        if upper_left and visited[pos[0]][pos[1]] == -1:
-            if board[pos[0]][pos[1]] == colour:
-                visited[pos[0]][pos[1]] = 1
-                return 1
-            else:
-                visited[pos[0]][pos[1]] = 0
-                return 0
-        elif upper_right and visited[pos[0]][pos[1]] == -1:
-            if board[pos[0]][pos[1]] == colour:
-                visited[pos[0]][pos[1]] = 1
-                return 1
-            else:
-                visited[pos[0]][pos[1]] = 0
-                return 0
-        elif lower_right and visited[pos[0]][pos[1]] == -1:
-            if board[pos[0]][pos[1]] == colour:
-                visited[pos[0]][pos[1]] = 1
-                return 1
-            else:
-                visited[pos[0]][pos[1]] = 0
-                return 0
-        elif lower_left and visited[pos[0]][pos[1]] == -1:
-            if board[pos[0]][pos[1]] == colour:
-                visited[pos[0]][pos[1]] = 1
-                return 1
-            else:
-                visited[pos[0]][pos[1]] = 0
-                return 0
+        i = pos[0]
+        j = pos[1]
+        not_on_board_i = i >= len(board) or i < 0
+        not_on_board_j = j >= len(board) or j < 0
+        if not_on_board_i or not_on_board_j:
+            return 0
+        elif visited[i][j] != -1:
+            return 0
+        elif board[i][j] != colour:
+            visited[i][j] = 0
+            return 0
         else:
-            s = 0
-            if board[pos[0]][pos[1]] == colour:
-                visited[pos[0]][pos[1]] = 1
-                s += 1
-
-                if self._can_iterate(board, pos[0], pos[1])[0][1]:
-                    # iterate on the right column
-                    position = (pos[0] + 1, pos[1])
-                    s += self._undiscovered_blob_size(position, board, visited)
-                if self._can_iterate(board, pos[0], pos[1])[0][0]:
-                    # iterate on the left column
-                    position = (pos[0], pos[1] + 1)
-                    s += self._undiscovered_blob_size(position, board, visited)
-                if self._can_iterate(board, pos[0], pos[1])[1][1]:
-                    # iterate on the row below
-                    position = (pos[0] + 1, pos[1])
-                    s += self._undiscovered_blob_size(position, board, visited)
-                if self._can_iterate(board, pos[0], pos[1])[1][0]:
-                    # iterate on the row above
-                    position = (pos[0], pos[1] + 1)
-                    s += self._undiscovered_blob_size(position, board, visited)
-            else:
-                visited[pos[0]][pos[1]] = 0
+            s = 1
+            visited[i][j] = 1
+            pos1 = (pos[0], pos[1] + 1)
+            pos2 = (pos[0], pos[1] - 1)
+            pos3 = (pos[0] + 1, pos[1])
+            pos4 = (pos[0] - 1, pos[1])
+            s += self._undiscovered_blob_size(pos1, board, visited)
+            s += self._undiscovered_blob_size(pos2, board, visited)
+            s += self._undiscovered_blob_size(pos3, board, visited)
+            s += self._undiscovered_blob_size(pos4, board, visited)
             return s
-
-    def _can_iterate(self, board: List[List[Tuple[int, int, int]]],
-                     column: int, row: int) -> \
-            List[Tuple[bool, bool]]:
-        """ Return a List containing 2 Tuples, where each tuple consists of two
-        boolean values, True False. In the first Tuple, at index 0, return True
-        if column can be decreased by 1, if not then it is False. At index 1
-        it is True if column can be increased by 1 and False if it cannot.
-        In the second Tuple at index 0, return True
-        if row can be decreased by 1, if not then it is False. At index 1
-        it is True if row can be increased by 1 and False if it cannot.
-        """
-        if column > 0:
-            left = True
-        else:
-            left = False
-        if column < (len(board)-1):
-            right = True
-        else:
-            right = False
-        if row > 0:
-            up = True
-        else:
-            up = False
-        if row < (len(board)-1):
-            down = True
-        else:
-            down = False
-        return [(left, right), (up, down)]
 
     def description(self) -> str:
         """Returns a description of the player's goal, in which the player
