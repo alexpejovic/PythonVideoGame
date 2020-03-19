@@ -86,8 +86,6 @@ def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
     if location_in_block(block, location):
         if block.level == level:
             return block
-        elif block.level == block.max_depth and level > block.max_depth:
-            return block
         else:
             for child in block.children:
                 if _get_block(child, location, level) is not None:
@@ -187,7 +185,7 @@ class HumanPlayer(Player):
         If no block is selected by the player, return None.
         """
         mouse_pos = pygame.mouse.get_pos()
-        block = _get_block(board, mouse_pos, self._level)
+        block = _get_block(board, mouse_pos, min(self._level, board.max_depth))
 
         return block
 
