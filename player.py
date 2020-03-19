@@ -86,12 +86,9 @@ def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
     if location_in_block(block, location):
         if block.level == level:
             return block
-        elif level > block.max_depth:
-            for child in block.children:
-                if child.level == child.max_depth:
-                    return child
+        elif block.level == block.max_depth and level > block.max_depth:
+            return block
         else:
-
             for child in block.children:
                 if _get_block(child, location, level) is not None:
                     return _get_block(child, location, level)
@@ -271,7 +268,8 @@ class SmartPlayer(Player):
     _proceed: bool
 
     def __init__(self, player_id: int, goal: Goal, difficulty: int) -> None:
-        # TODO: Implement Me
+        Player.__init__(self, player_id, goal)
+        self.difficulty = difficulty
         self._proceed = False
 
     def get_selected_block(self, board: Block) -> Optional[Block]:
