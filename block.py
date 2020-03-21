@@ -336,8 +336,15 @@ class Block:
 
         Remember that a deep copy has new blocks (not aliases) at every level.
         """
-        # TODO: Implement me
-        pass  # FIXME
+        if not self.children:
+            return Block(self.position, self.size, self.colour, self.level,
+                         self.max_depth)
+        else:
+            for i in range(4):
+                self.children[i] = self.children[i].create_copy()
+
+            return Block(self.position, self.size, self.colour, self.level,
+                         self.max_depth)
 
 
 if __name__ == '__main__':
