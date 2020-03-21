@@ -82,7 +82,6 @@ def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
     Preconditions:
         - 0 <= level <= max_depth
     """
-
     if location_in_block(block, location):
         if block.level == level:
             return block
@@ -250,11 +249,10 @@ class RandomPlayer(Player):
         This function does not mutate <board>.
         """
         if not self._proceed:
-            return None  # Do not remove
+            return None
 
-        # TODO: Implement Me
 
-        self._proceed = False  # Must set to False before returning!
+        self._proceed = False
         return None  # FIXME
 
 

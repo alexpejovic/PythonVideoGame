@@ -228,6 +228,8 @@ class Block:
             else:
                 self.colour = COLOUR_LIST[random.randint(0, 3)]
 
+        return True
+
     def swap(self, direction: int) -> bool:
         """Swap the child Blocks of this Block.
 
