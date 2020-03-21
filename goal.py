@@ -157,12 +157,8 @@ class PerimeterGoal(Goal):
         perimeter of the game board.
         """
         c = colour_name(self.colour)
-        return 'You must aim to put the most possible units of the' \
-               ' colour' + c + ' on the outer perimeter of the board.' \
-               ' Your score is the total number of unit cells of' \
-            ' colour ' + c + ' that are on the perimeter. There is a premium' \
-            ' on corner cells: they count twice towards the score.'
-
+        return 'Place the most possible unit blocks of' \
+               ' colour ' + c + ' on the perimeter.'
 
 class BlobGoal(Goal):
 
@@ -233,11 +229,7 @@ class BlobGoal(Goal):
         must create a connected set of blocks of a single colour
         """
         c = colour_name(self.colour)
-        return 'You must aim for the largest “blob” of the colour' + c + '.' \
-               ' A blob is a group of connected blocks with the same colour.' \
-               ' Two blocks are connected if their sides touch; touching' \
-               ' corners doesn’t count. Your score is the number of unit' \
-               ' cells in the largest blob of colour ' + c + ' .'
+        return 'Create the largest possible blob of colour ' + c + '.'
 
 
 if __name__ == '__main__':
