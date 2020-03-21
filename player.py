@@ -233,6 +233,29 @@ class RandomPlayer(Player):
         Player.__init__(self, player_id, goal)
         self._proceed = False
 
+    def _is_move_valid(self, block: Block, action: Tuple[str, Optional[int]]) \
+            -> bool:
+        """ Performs <action> on <block> and returns True if that action was
+        successful, False otherwise.
+
+        ===Precondition===
+        <action> represents a player action other than PASS
+        """
+        move_successful = False
+
+        if action in [ROTATE_CLOCKWISE, ROTATE_COUNTER_CLOCKWISE]:
+            move_successful = block.rotate(action[1])
+        elif action in [SWAP_HORIZONTAL, SWAP_VERTICAL]:
+            move_successful = block.swap(action[1])
+        elif action == SMASH:
+            move_successful = block.smash()
+        elif action == PAINT:
+            move_successful = block.paint(self.goal.colour)
+        elif action == COMBINE:
+            move_successful = block.combine()
+
+        return move_successful
+
     def get_selected_block(self, board: Block) -> Optional[Block]:
         return None
 
@@ -252,9 +275,24 @@ class RandomPlayer(Player):
         if not self._proceed:
             return None
 
+        actions = [action1 for action1 in KEY_ACTION.values()]
+        actions.remove(PASS)
+        has_valid = False
+        board = board.create_copy()
+        action = actions[0]
+        block = board
+
+        while not has_valid:
+            r = random.randint(0, len(actions) - 1)
+            action = actions[r]
+            block = _get_block(board,
+                               (random.randint(0, board.size - 1),
+                                random.randint(0, board.size - 1)),
+                               random.randint(0, board.max_depth))
+            has_valid = self._is_move_valid(block, action)
 
         self._proceed = False
-        return None  # FIXME
+        return action[0], action[1], block
 
 
 class SmartPlayer(Player):
