@@ -56,8 +56,8 @@ def create_players(num_human: int, num_random: int, smart_players: List[int]) \
         player_j = RandomPlayer(j, g[j])
         lst.append(player_j)
     s = 0
-    for k in range(num_random+num_human, num_human + num_random +
-                                         len(smart_players)):
+    for k in range(num_random + num_human,
+                   num_human + num_random + len(smart_players)):
         player_k = SmartPlayer(k, g[k], smart_players[s])
         lst.append(player_k)
         s += 1
@@ -82,14 +82,18 @@ def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
     Preconditions:
         - 0 <= level <= max_depth
     """
-    if location_in_block(block, location):
-        if block.level == level or (block.level < level and
-                                    block.children == []):
-            return block
-        else:
-            for child in block.children:
-                if location_in_block(child, location):
-                    return _get_block(child, location, level)
+
+    if location_in_block(block, location) and (block.level == level or
+                                               (block.level < level and
+                                                block.children == [])):
+        return block
+    elif location_in_block(block, location) and not (block.level == level or
+                                                     (block.level < level and
+                                                      block.children == [])):
+        for child in block.children:
+            if location_in_block(child, location):
+                return _get_block(child, location, level)
+    return None
 
 
 def location_in_block(block: Block, location: Tuple[int, int]) -> bool:
@@ -98,7 +102,8 @@ def location_in_block(block: Block, location: Tuple[int, int]) -> bool:
     and y coordinates. If location is outside of block.position return False."""
     first_return = block.position[0] <= location[0] < block.position[0] + \
                    block.size
-    second_return = block.position[1] <= location[1] < block.position[1] + block.size
+    second_return = block.position[1] <= location[1] < block.position[1] + \
+                    block.size
     return first_return and second_return
 
 
@@ -223,10 +228,14 @@ class HumanPlayer(Player):
 
 
 class RandomPlayer(Player):
-    # === Private Attributes ===
-    # _proceed:
-    #   True when the player should make a move, False when the player should
-    #   wait.
+    """" A random player in the game Blocky.
+
+    === Private Attributes ===
+    _proceed:
+      True when the player should make a move, False when the player should
+      wait.
+
+    """
     _proceed: bool
 
     def __init__(self, player_id: int, goal: Goal) -> None:
@@ -296,15 +305,21 @@ class RandomPlayer(Player):
 
 
 class SmartPlayer(Player):
-    # === Private Attributes ===
-    # _proceed:
-    #   True when the player should make a move, False when the player should
-    #   wait.
+    """ A smart player in the game Blocky.
+    === Private Attributes ===
+    _proceed:
+      True when the player should make a move, False when the player should
+      wait.
+    _difficulty:
+      The difficulty level which indicates how hard it is to play against this
+      player
+    """
+    _difficulty: int
     _proceed: bool
 
     def __init__(self, player_id: int, goal: Goal, difficulty: int) -> None:
         Player.__init__(self, player_id, goal)
-        self.difficulty = difficulty
+        self._difficulty = difficulty
         self._proceed = False
 
     def get_selected_block(self, board: Block) -> Optional[Block]:
@@ -326,13 +341,58 @@ class SmartPlayer(Player):
 
         This function does not mutate <board>.
         """
-        if not self._proceed:
-            return None  # Do not remove
+        actions = [ROTATE_CLOCKWISE, ROTATE_COUNTER_CLOCKWISE, SWAP_HORIZONTAL,
+                   SWAP_VERTICAL, SMASH, PASS, PAINT, COMBINE]
+        block = board.create_copy()
+        action = PASS
+        best_blocks = block
+        i = 0
+        while i < self._difficulty:
+            random_num = random.randint(0, len(actions) - 1)
+            move = actions[random_num]
+            location = (random.randint(0, block.size - 1),
+                        random.randint(0, block.size - 1))
+            level = random.randint(0, block.max_depth)
+            random_block = _get_block(board, location, level)
+            random_block_copy = _get_block(block, location, level)
+            if self._apply_action(move, random_block_copy):
+                if self.goal.score(block) > self.goal.score(board):
+                    action = move
+                    best_blocks = random_block
+                i += 1
 
-        # TODO: Implement Me
+        if action == PASS:
+            self._proceed = False
+            return _create_move(PASS, board)
+        else:
+            self._proceed = False  # Must set to False before returning!
+            return _create_move(action, best_blocks[-1])
 
-        self._proceed = False  # Must set to False before returning!
-        return None  # FIXME
+    def _apply_action(self, move: Tuple[str, Optional[int]],
+                      block: Block) -> bool:
+        """
+        Apply the correct method to the board <block>, according to the name of
+        the method which is found in <move> at index 0, and pass the given
+        parameter which is found at index 1 in <move>. Return True if the method
+        /move was valid and return False if it was not.
+        """
+        direction = move[1]
+
+        if move == ROTATE_CLOCKWISE or move == ROTATE_COUNTER_CLOCKWISE:
+            move_successful = block.rotate(direction)
+            return move_successful
+        elif move == SWAP_HORIZONTAL or move == SWAP_VERTICAL:
+            move_successful = block.swap(direction)
+            return move_successful
+        elif move == SMASH:
+            move_successful = block.smash()
+            return move_successful
+        elif move == PAINT:
+            move_successful = block.paint(self.goal.colour)
+            return move_successful
+        else:
+            move_successful = block.combine()
+            return move_successful
 
 
 if __name__ == '__main__':
