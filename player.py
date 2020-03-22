@@ -227,6 +227,29 @@ class HumanPlayer(Player):
             return move
 
 
+def _is_move_valid(player: Player, block: Block,
+                   action: Tuple[str, Optional[int]]) -> bool:
+    """ Performs <action> on <block> and returns True if that action was
+    successful, False otherwise.
+
+    ===Precondition===
+    <action> represents a player action other than PASS
+    """
+    move_successful = False
+
+    if action in [ROTATE_CLOCKWISE, ROTATE_COUNTER_CLOCKWISE]:
+        move_successful = block.rotate(action[1])
+    elif action in [SWAP_HORIZONTAL, SWAP_VERTICAL]:
+        move_successful = block.swap(action[1])
+    elif action == SMASH:
+        move_successful = block.smash()
+    elif action == PAINT:
+        move_successful = block.paint(player.goal.colour)
+    elif action == COMBINE:
+        move_successful = block.combine()
+
+    return move_successful
+
 class RandomPlayer(Player):
     """" A random player in the game Blocky.
 
@@ -240,29 +263,6 @@ class RandomPlayer(Player):
     def __init__(self, player_id: int, goal: Goal) -> None:
         Player.__init__(self, player_id, goal)
         self._proceed = False
-
-    def _is_move_valid(self, block: Block, action: Tuple[str, Optional[int]]) \
-            -> bool:
-        """ Performs <action> on <block> and returns True if that action was
-        successful, False otherwise.
-
-        ===Precondition===
-        <action> represents a player action other than PASS
-        """
-        move_successful = False
-
-        if action in [ROTATE_CLOCKWISE, ROTATE_COUNTER_CLOCKWISE]:
-            move_successful = block.rotate(action[1])
-        elif action in [SWAP_HORIZONTAL, SWAP_VERTICAL]:
-            move_successful = block.swap(action[1])
-        elif action == SMASH:
-            move_successful = block.smash()
-        elif action == PAINT:
-            move_successful = block.paint(self.goal.colour)
-        elif action == COMBINE:
-            move_successful = block.combine()
-
-        return move_successful
 
     def get_selected_block(self, board: Block) -> Optional[Block]:
         return None
@@ -297,7 +297,7 @@ class RandomPlayer(Player):
                                (random.randint(0, board.size - 1),
                                 random.randint(0, board.size - 1)),
                                random.randint(0, board.max_depth))
-            has_valid = self._is_move_valid(block, action)
+            has_valid = _is_move_valid(self, block, action)
 
         self._proceed = False
         return action[0], action[1], block
@@ -354,7 +354,7 @@ class SmartPlayer(Player):
             level = random.randint(0, block.max_depth)
             random_block = _get_block(board, location, level)
             random_block_copy = _get_block(block, location, level)
-            if self._apply_action(move, random_block_copy):
+            if _is_move_valid(self, random_block_copy, move):
                 if self.goal.score(block) > self.goal.score(board):
                     action = move
                     best_blocks = random_block
@@ -366,32 +366,6 @@ class SmartPlayer(Player):
         else:
             self._proceed = False
             return _create_move(action, best_blocks[-1])
-
-    def _apply_action(self, move: Tuple[str, Optional[int]],
-                      block: Block) -> bool:
-        """
-        Apply the correct method to the board <block>, according to the name of
-        the method which is found in <move> at index 0, and pass the given
-        parameter which is found at index 1 in <move>. Return True if the method
-        /move was valid and return False if it was not.
-        """
-        direction = move[1]
-
-        if move == ROTATE_CLOCKWISE or move == ROTATE_COUNTER_CLOCKWISE:
-            move_successful = block.rotate(direction)
-            return move_successful
-        elif move == SWAP_HORIZONTAL or move == SWAP_VERTICAL:
-            move_successful = block.swap(direction)
-            return move_successful
-        elif move == SMASH:
-            move_successful = block.smash()
-            return move_successful
-        elif move == PAINT:
-            move_successful = block.paint(self.goal.colour)
-            return move_successful
-        else:
-            move_successful = block.combine()
-            return move_successful
 
 
 if __name__ == '__main__':
