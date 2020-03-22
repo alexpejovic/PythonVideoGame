@@ -250,6 +250,7 @@ def _is_move_valid(player: Player, block: Block,
 
     return move_successful
 
+
 class RandomPlayer(Player):
     """" A random player in the game Blocky.
 
@@ -300,7 +301,7 @@ class RandomPlayer(Player):
             has_valid = _is_move_valid(self, block, action)
 
         self._proceed = False
-        return action[0], action[1], block
+        return _create_move(action, block)
 
 
 class SmartPlayer(Player):
@@ -365,7 +366,7 @@ class SmartPlayer(Player):
             return _create_move(PASS, board)
         else:
             self._proceed = False
-            return _create_move(action, best_blocks[-1])
+            return _create_move(action, best_blocks)
 
 
 if __name__ == '__main__':
