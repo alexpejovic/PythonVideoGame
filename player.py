@@ -365,7 +365,7 @@ class SmartPlayer(Player):
             self._proceed = False
             return _create_move(PASS, board)
         else:
-            self._proceed = False  # Must set to False before returning!
+            self._proceed = False  
             return _create_move(action, best_blocks[-1])
 
     def _apply_action(self, move: Tuple[str, Optional[int]],
