@@ -234,7 +234,6 @@ class RandomPlayer(Player):
     _proceed:
       True when the player should make a move, False when the player should
       wait.
-
     """
     _proceed: bool
 
@@ -365,7 +364,7 @@ class SmartPlayer(Player):
             self._proceed = False
             return _create_move(PASS, board)
         else:
-            self._proceed = False  
+            self._proceed = False
             return _create_move(action, best_blocks[-1])
 
     def _apply_action(self, move: Tuple[str, Optional[int]],
