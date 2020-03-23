@@ -321,7 +321,7 @@ class Block:
         Return True iff this Block was turned into a leaf node.
         """
         if len(self.children) == 4 and self.level == self.max_depth - 1:
-            d = {colour: 0 for colour in COLOUR_LIST}
+            d = {colour1: 0 for colour1 in COLOUR_LIST}
             for child in self.children:
                 d[child.colour] += 1
 
