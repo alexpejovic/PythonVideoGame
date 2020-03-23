@@ -287,7 +287,7 @@ class RandomPlayer(Player):
         if not self._proceed:
             return None
 
-        actions = [action1 for action1 in KEY_ACTION.values()]
+        actions = KEY_ACTION.values()
         actions.remove(PASS)
         has_valid = False
         board = board.create_copy()
