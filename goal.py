@@ -43,7 +43,7 @@ def generate_goals(num_goals: int) -> List[Goal]:
     bgoals = []
     colours = []
     for i in range(num_goals):
-        random_num = random.randint(0, len(COLOUR_LIST))
+        random_num = random.randint(0, len(COLOUR_LIST)-1)
         j = 0
         while j < 1:
             if COLOUR_LIST[random_num] not in colours:
