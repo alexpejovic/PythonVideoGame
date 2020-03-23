@@ -41,9 +41,16 @@ def generate_goals(num_goals: int) -> List[Goal]:
     """
     pgoals = []
     bgoals = []
-    for colour in COLOUR_LIST:
-        pgoals.append(PerimeterGoal(colour))
-        bgoals.append(BlobGoal(colour))
+    colours = []
+    for i in range(num_goals):
+        random_num = random.randint(0, len(COLOUR_LIST))
+        j = 0
+        while j < 1:
+            if COLOUR_LIST[random_num] not in colours:
+                pgoals.append(PerimeterGoal(COLOUR_LIST[random_num]))
+                bgoals.append(BlobGoal(COLOUR_LIST[random_num]))
+                colours.append(COLOUR_LIST[random_num])
+                j += 1
 
     r = random.randint(0, 1)
     if r == 0:
