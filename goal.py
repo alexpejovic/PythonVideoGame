@@ -22,7 +22,6 @@ Misha Schwartz, and Jaisie Sin
 This file contains the hierarchy of Goal classes.
 """
 from __future__ import annotations
-import math
 import random
 from typing import List, Tuple
 from block import Block
@@ -42,7 +41,7 @@ def generate_goals(num_goals: int) -> List[Goal]:
     pgoals = []
     bgoals = []
     colours = []
-    for i in range(num_goals):
+    for _ in range(num_goals):
         random_num = random.randint(0, len(COLOUR_LIST)-1)
         j = 0
         while j < 1:
@@ -59,7 +58,7 @@ def generate_goals(num_goals: int) -> List[Goal]:
         goal_list = bgoals
 
     goals = []
-    for i in range(num_goals):
+    for _ in range(num_goals):
         r2 = random.randint(0, len(goal_list) - 1)
         goals.append(goal_list[r2])
         del goal_list[r2]
@@ -131,9 +130,18 @@ class Goal:
 
 
 class PerimeterGoal(Goal):
+    """ A player's perimeter goal in the game Blocky.
+
+    A Perimeter goal is the goal of having a certain colour appear on the
+    perimeter of the Blocky board as often as possible.
+
+    This is a child class of Goal, and it adds no extra attributes.
+    """
 
     def score(self, board: Block) -> int:
-
+        """ Returns the score of the <board> based on how many unit blocks of
+        <colour> are on the perimeter. Corners count as double the points.
+        """
         flattened = _flatten(board)
         s = 0
 
@@ -167,9 +175,22 @@ class PerimeterGoal(Goal):
         return 'Place the most possible unit blocks of' \
                ' colour ' + c + ' on the perimeter.'
 
+
 class BlobGoal(Goal):
+    """ The Blob player goal in the game Blocky.
+
+    This class represents the goal of having one large blob of a certain
+    colour on the Blocky board. A "Blob" is a series of blocks whose sides
+    touch.
+
+    This is a child class of Goal, and it has no extra attributes.
+    """
 
     def score(self, board: Block) -> int:
+        """ Returns the score of <board> based on the largest blob of <colour>
+        that exists on the board. Every unit square size of the colour
+        belonging to the blob counts as 1 point.
+        """
         n = len(_flatten(board))
         visits = []
         for i in range(n):
@@ -219,17 +240,15 @@ class BlobGoal(Goal):
             visited[i][j] = 0
             return 0
         else:
-            s = 1
             visited[i][j] = 1
             pos1 = (pos[0], pos[1] + 1)
             pos2 = (pos[0], pos[1] - 1)
             pos3 = (pos[0] + 1, pos[1])
             pos4 = (pos[0] - 1, pos[1])
-            s += self._undiscovered_blob_size(pos1, board, visited)
-            s += self._undiscovered_blob_size(pos2, board, visited)
-            s += self._undiscovered_blob_size(pos3, board, visited)
-            s += self._undiscovered_blob_size(pos4, board, visited)
-            return s
+            return 1 + self._undiscovered_blob_size(pos1, board, visited) + \
+                self._undiscovered_blob_size(pos2, board, visited) + \
+                self._undiscovered_blob_size(pos3, board, visited) + \
+                self._undiscovered_blob_size(pos4, board, visited)
 
     def description(self) -> str:
         """Returns a description of the player's goal, in which the player
@@ -249,5 +268,3 @@ if __name__ == '__main__':
         ],
         'max-attributes': 15
     })
-
-
