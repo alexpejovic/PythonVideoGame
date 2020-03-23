@@ -342,12 +342,6 @@ class Block:
             return Block(self.position, self.size, self.colour, self.level,
                          self.max_depth)
         else:
-            # I Fixed your code here, and saved your original at the bottom
-            # originally you were accessing every child and mutating it by
-            # setting self.children[i] to a new value
-            # the idea is to copy the original child and not mutate it,
-            # create a new list with the copied children, and make
-            # that the children of the copied block
             children = []
             for child in self.children:
                 children.append(child.create_copy())
@@ -355,12 +349,6 @@ class Block:
                       self.max_depth)
             b.children = children
             return b
-
-            # for i in range(4):
-            #     self.children[i] = self.children[i].create_copy()
-            #
-            # return Block(self.position, self.size, self.colour, self.level,
-            #              self.max_depth)
 
 
 if __name__ == '__main__':
