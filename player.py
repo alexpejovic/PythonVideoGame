@@ -47,18 +47,21 @@ def create_players(num_human: int, num_random: int, smart_players: List[int]) \
     <smart_players> should be applied to each SmartPlayer object, in order.
     """
 
-    g = generate_goals(len(smart_players) + num_human + num_random)
+    # g = generate_goals(len(smart_players) + num_human + num_random)
     lst = []
     for i in range(num_human):
-        player_i = HumanPlayer(i, g[i])
+        g = generate_goals(1)
+        player_i = HumanPlayer(i, g[0])
         lst.append(player_i)
     for j in range(num_human, num_human + num_random):
-        player_j = RandomPlayer(j, g[j])
+        g = generate_goals(1)
+        player_j = RandomPlayer(j, g[0])
         lst.append(player_j)
     s = 0
     for k in range(num_random + num_human,
                    num_human + num_random + len(smart_players)):
-        player_k = SmartPlayer(k, g[k], smart_players[s])
+        g = generate_goals(1)
+        player_k = SmartPlayer(k, g[0], smart_players[s])
         lst.append(player_k)
         s += 1
     return lst

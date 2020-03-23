@@ -351,8 +351,10 @@ class Block:
             children = []
             for child in self.children:
                 children.append(child.create_copy())
-            return Block(self.position, self.size, self.colour, self.level,
-                         self.max_depth)
+            b = Block(self.position, self.size, self.colour, self.level,
+                      self.max_depth)
+            b.children = children
+            return b
 
             # for i in range(4):
             #     self.children[i] = self.children[i].create_copy()
