@@ -350,8 +350,8 @@ class SmartPlayer(Player):
         board_copy = board.create_copy()
         best_blocks = board
         i = 0
-        best_action = actions[random.randint(0, len(actions) - 1)]
-        best_action_score = -1
+        best_action = PASS
+        best_action_score = self.goal.score(board)
         while i < self._difficulty:
             random_num = random.randint(0, len(actions) - 1)
             move = actions[random_num]
