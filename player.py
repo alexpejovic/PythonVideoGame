@@ -344,32 +344,32 @@ class SmartPlayer(Player):
 
         This function does not mutate <board>.
         """
-        actions = [ROTATE_CLOCKWISE, ROTATE_COUNTER_CLOCKWISE, SWAP_HORIZONTAL,
-                   SWAP_VERTICAL, SMASH, PASS, PAINT, COMBINE]
-        block = board.create_copy()
-        action = PASS
-        best_blocks = block
+        actions = list(KEY_ACTION.values)
+        actions.remove(PASS)
+        board_copy = board.create_copy()
+        best_blocks = board
         i = 0
+        best_action = actions[random.randint(0, len(actions) - 1)]
+        best_action_score = -1
         while i < self._difficulty:
             random_num = random.randint(0, len(actions) - 1)
             move = actions[random_num]
-            location = (random.randint(0, block.size - 1),
-                        random.randint(0, block.size - 1))
-            level = random.randint(0, block.max_depth)
+            location = (random.randint(0, board_copy.size - 1),
+                        random.randint(0, board_copy.size - 1))
+            level = random.randint(0, board_copy.max_depth)
             random_block = _get_block(board, location, level)
-            random_block_copy = _get_block(block, location, level)
+            random_block_copy = _get_block(board_copy, location, level)
             if _is_move_valid(self, random_block_copy, move):
-                if self.goal.score(block) > self.goal.score(board):
-                    action = move
+                new_score = self.goal.score(board_copy)
+                if new_score > best_action_score:
+                    best_action = move
                     best_blocks = random_block
+                    best_action_score = new_score
+                board_copy = board.create_copy()
                 i += 1
 
-        if action == PASS:
-            self._proceed = False
-            return _create_move(PASS, board)
-        else:
-            self._proceed = False
-            return _create_move(action, best_blocks)
+        self._proceed = False
+        return _create_move(best_action, best_blocks)
 
 
 if __name__ == '__main__':
