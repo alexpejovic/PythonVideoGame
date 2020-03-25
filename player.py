@@ -290,18 +290,19 @@ class RandomPlayer(Player):
         actions = list(KEY_ACTION.values())
         actions.remove(PASS)
         has_valid = False
-        board = board.create_copy()
+        board_copy = board.create_copy()
         action = actions[0]
         block = board
 
         while not has_valid:
             r = random.randint(0, len(actions) - 1)
             action = actions[r]
-            block = _get_block(board,
-                               (random.randint(0, board.size - 1),
-                                random.randint(0, board.size - 1)),
-                               random.randint(0, board.max_depth))
-            has_valid = _is_move_valid(self, block, action)
+            location = (random.randint(0, board.size - 1),
+                        random.randint(0, board.size - 1))
+            level = random.randint(0, board.max_depth)
+            block = _get_block(board, location, level)
+            block_copy = _get_block(board_copy, location, level)
+            has_valid = _is_move_valid(self, block_copy, action)
 
         self._proceed = False
         return _create_move(action, block)
