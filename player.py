@@ -344,7 +344,7 @@ class SmartPlayer(Player):
 
         This function does not mutate <board>.
         """
-        actions = list(KEY_ACTION.values)
+        actions = list(KEY_ACTION.values())
         actions.remove(PASS)
         board_copy = board.create_copy()
         best_blocks = board
