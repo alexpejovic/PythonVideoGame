@@ -611,38 +611,38 @@ def test_generate_goals_length_of_list_returned() -> None:
     assert len(generate_goals(4)) == 4
 
 
-# def test_generate_goals_type_of_goals_in_list_returned() -> None:
-#     g1 = generate_goals(1)
-#     g2 = generate_goals(2)
-#     # g3 = generate_goals(3)
-#     # g4 = generate_goals(4)
-#
-#     if not isinstance(g1[0], BlobGoal):
-#         assert isinstance(g1[0], PerimeterGoal)
-#     else:
-#         assert isinstance(g1[0], BlobGoal)
-#
-#     for goal in g2:
-#         if not isinstance(goal, BlobGoal):
-#             assert isinstance(goal, PerimeterGoal)
-#         else:
-#             assert isinstance(goal, BlobGoal)
+def test_generate_goals_type_of_goals_in_list_returned() -> None:
+    g1 = generate_goals(1)
+    g2 = generate_goals(2)
+    # g3 = generate_goals(3)
+    # g4 = generate_goals(4)
 
-# def test_generate_goals_each_colour_goal_occurs_once() -> None:
-#     g1 = generate_goals(1)
-#     g2 = generate_goals(2)
-#
-#     colours_1 = []
-#     for goal in g1:
-#         colours_1.append(goal.colour)
-#     for colour in colours_1:
-#         assert colours_1.count(colour) == 1
-#
-#     colours_2 = []
-#     for goal in g1:
-#         colours_2.append(goal.colour)
-#     for colour in colours_2:
-#         assert colours_2.count(colour) == 1
+    if not isinstance(g1[0], BlobGoal):
+        assert isinstance(g1[0], PerimeterGoal)
+    else:
+        assert isinstance(g1[0], BlobGoal)
+
+    for goal in g2:
+        if not isinstance(goal, BlobGoal):
+            assert isinstance(goal, PerimeterGoal)
+        else:
+            assert isinstance(goal, BlobGoal)
+
+def test_generate_goals_each_colour_goal_occurs_once() -> None:
+    g1 = generate_goals(1)
+    g2 = generate_goals(2)
+
+    colours_1 = []
+    for goal in g1:
+        colours_1.append(goal.colour)
+    for colour in colours_1:
+        assert colours_1.count(colour) == 1
+
+    colours_2 = []
+    for goal in g1:
+        colours_2.append(goal.colour)
+    for colour in colours_2:
+        assert colours_2.count(colour) == 1
 
 
 def test_smash_1_block_4_kids_max_depth_is_1() -> None:
