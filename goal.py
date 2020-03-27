@@ -145,6 +145,9 @@ class PerimeterGoal(Goal):
         flattened = _flatten(board)
         s = 0
 
+        if board.max_depth == 0 and self.colour == board.colour:
+            return 4
+
         for i in range(1, len(flattened) - 1):
             if flattened[0][i] == self.colour:
                 s += 1
