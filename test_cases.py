@@ -3,7 +3,7 @@ from typing import List, Tuple, Optional, Union
 from block import Block
 from blocky import _block_to_squares
 from goal import BlobGoal, PerimeterGoal, _flatten, generate_goals, Goal
-from player import _get_block
+from player import _get_block, create_players, Player, SmartPlayer, RandomPlayer, HumanPlayer
 from renderer import Renderer
 from settings import COLOUR_LIST
 WHITE = (255, 255, 255)
@@ -113,8 +113,6 @@ def visited(board: Block) -> List[List[int]]:
             k.append(-1)
         visits.append(k)
     return visits
-
-
 
 
 # === TESTS ===
@@ -322,6 +320,27 @@ def test_perimeter_score_goal_complicated_block_depth_2() -> None:
     # perimeter score for yellow colour
     goal = PerimeterGoal(MELON_MAMBO)
     assert goal.score(b) == 1
+
+
+def test_perimeter_goal_score_lone_block() -> None:
+    b = lone_block()
+    goal = PerimeterGoal(REAL_RED)
+    assert goal.score(b) == 4
+
+def test_perimeter_goal_score_lone_block_max_depth_is_1() -> None:
+    # max_depth = 1
+    goal = PerimeterGoal(REAL_RED)
+    block = lone_block()
+    block.max_depth = 1
+    assert goal.score(block) == 8
+
+
+def test_blob_goal_score_lone_block() -> None:
+    b = lone_block()
+    # max_depth = 0
+    goal = BlobGoal(REAL_RED)
+    assert goal.score(b) == 1
+
 
 def test_perimeter_goal_score_complicated_block_depth_3() -> None:
     b = complicated_block_depth_3()
@@ -584,6 +603,330 @@ def test_BlobGoal_score_complicated_depth_2_yellow() -> None:
 
     assert goal.score(b) == 1
 
+
+# def test_generate_goals_length_of_list_returned() -> None:
+#     assert len(generate_goals(1)) == 1
+#     assert len(generate_goals(2)) == 2
+#     assert len(generate_goals(3)) == 3
+#     assert len(generate_goals(4)) == 4
+
+
+# def test_generate_goals_type_of_goals_in_list_returned() -> None:
+#     g1 = generate_goals(1)
+#     g2 = generate_goals(2)
+#     # g3 = generate_goals(3)
+#     # g4 = generate_goals(4)
+#
+#     if not isinstance(g1[0], BlobGoal):
+#         assert isinstance(g1[0], PerimeterGoal)
+#     else:
+#         assert isinstance(g1[0], BlobGoal)
+#
+#     for goal in g2:
+#         if not isinstance(goal, BlobGoal):
+#             assert isinstance(goal, PerimeterGoal)
+#         else:
+#             assert isinstance(goal, BlobGoal)
+
+# def test_generate_goals_each_colour_goal_occurs_once() -> None:
+#     g1 = generate_goals(1)
+#     g2 = generate_goals(2)
+#
+#     colours_1 = []
+#     for goal in g1:
+#         colours_1.append(goal.colour)
+#     for colour in colours_1:
+#         assert colours_1.count(colour) == 1
+#
+#     colours_2 = []
+#     for goal in g1:
+#         colours_2.append(goal.colour)
+#     for colour in colours_2:
+#         assert colours_2.count(colour) == 1
+
+
+def test_smash_1_block_4_kids_max_depth_is_1() -> None:
+    b = one_block_four_children()
+    b.max_depth = 1
+    assert not b.smashable()
+    for child in b.children:
+        assert not child.smashable()
+
+
+def test_smash_1_block_4_kids_max_depth_is_2() -> None:
+    b = one_block_four_children()
+    b.max_depth = 2
+    for i in range(4):
+        b.children[i].max_depth = 2
+    assert not b.smashable()
+    for child in b.children:
+        assert child.smashable()
+
+def test_smash_1_block_4_kids_one_kid_has_four_kids_depth_3() -> None:
+    b = one_block_4_kids_one_kid_has_4_kids()
+    b.max_depth = 3
+    assert b.children[0].smashable()
+    assert b.children[1].smashable()
+    assert b.children[3].smashable()
+    assert not b.children[2].smashable()
+
+def test_smash_1_block_4_kids_one_kid_has_four_kids_depth_4() -> None:
+    b = one_block_4_kids_one_kid_has_4_kids()
+    b.max_depth = 4
+    for i in range(4):
+        b.children[i].max_depth = 4
+    for i in range(4):
+        b.children[2].children[i].max_depth = 4
+    assert b.children[0].smashable()
+    assert b.children[1].smashable()
+    assert b.children[3].smashable()
+    assert not b.children[2].smashable()
+    assert b.children[2].children[0].smashable()
+    assert b.children[2].children[1].smashable()
+    assert b.children[2].children[2].smashable()
+    assert b.children[2].children[3].smashable()
+
+def test_get_block_when_block_is_at_level_0() -> None:
+    # the block at level 0 is the deepest block
+    # return that block
+
+    b = lone_block()
+    #location is in block
+    assert _get_block(b, (0, 600), 3) == b
+    assert _get_block(b, (0, 600), 0) == b
+
+    #location is not in the block
+    assert _get_block(b, (0, 760), 0) is None
+
+    block_max_depth_is_5 = lone_block()
+    block_max_depth_is_5.max_depth = 5
+    assert _get_block(b, (0, 600), 3) == b
+
+def test_get_block_one_block_4_kids_return_child_at_location() -> None:
+    b = one_block_four_children()
+    # position of child[0] is (375, 0)
+    # position of child[1] is (0, 0)
+    # position of child[2] is (0, 375)
+    # position of child[3] is (375, 375)
+
+    # location in child[0]
+    location = (400, 40)
+    assert _get_block(b, location, 1) == b.children[0]
+    assert _get_block(b, location, 3) == b.children[0]
+    assert _get_block(b, location, 0) == b
+
+    # location in child[1]
+    location = (3, 40)
+    assert _get_block(b, location, 1) == b.children[1]
+    assert _get_block(b, location, 3) == b.children[1]
+    assert _get_block(b, location, 0) == b
+
+    # location in child[2]
+    location = (120, 450)
+    assert _get_block(b, location, 1) == b.children[2]
+    assert _get_block(b, location, 3) == b.children[2]
+    assert _get_block(b, location, 0) == b
+
+    # location in child[3]
+    location = (600, 610)
+    assert _get_block(b, location, 1) == b.children[3]
+    assert _get_block(b, location, 3) == b.children[3]
+    assert _get_block(b, location, 0) == b
+
+
+def test_get_block_one_block_4_kids_one_kid_has_4_kids_returns_grandchild() -> None:
+    b = one_block_4_kids_one_kid_has_4_kids()
+    # position of child[0] is (375, 0)
+    # position of child[1] is (0, 0)
+    # position of child[2] is (0, 375)
+    # position of child[3] is (375, 375)
+
+    # position of child[2].child[0] is (188, 375)
+    # position of child[2].child[1] is (0, 375)
+    # position of child[2].child[2] is (0, 563)
+    # position of child[2].child[3] is (188, 563)
+
+    # edge cases
+    location = (188, 600)
+    assert _get_block(b, location, 1) == b.children[2]
+    assert not _get_block(b, location, 2) == b.children[2].children[2]
+    assert not _get_block(b, location, 2) == b.children[2].children[1]
+    assert not _get_block(b, location, 2) == b.children[2].children[0]
+    assert _get_block(b, location, 2) == b.children[2].children[3]
+    location = (375, 500)
+    assert not _get_block(b, location, 2) == b.children[2]
+    assert _get_block(b, location, 2) == b.children[3]
+
+
+    # location in child[0]
+    location = (400, 40)
+    assert _get_block(b, location, 1) == b.children[0]
+    assert _get_block(b, location, 3) == b.children[0]
+    assert _get_block(b, location, 0) == b
+
+    # location in child[1]
+    location = (3, 40)
+    assert _get_block(b, location, 1) == b.children[1]
+    assert _get_block(b, location, 3) == b.children[1]
+    assert _get_block(b, location, 0) == b
+
+    # location in child[2]
+    location = (120, 450)
+    assert _get_block(b, location, 1) == b.children[2]
+    assert _get_block(b, location, 3) == b.children[2].children[1]
+    assert _get_block(b, location, 0) == b
+
+    location = (200, 700)
+    assert _get_block(b, location, 1) == b.children[2]
+    assert _get_block(b, location, 3) == b.children[2].children[3]
+    assert _get_block(b, location, 0) == b
+
+    location = (100, 700)
+    assert _get_block(b, location, 1) == b.children[2]
+    assert _get_block(b, location, 3) == b.children[2].children[2]
+    assert _get_block(b, location, 0) == b
+
+    location = (200, 400)
+    assert _get_block(b, location, 1) == b.children[2]
+    assert _get_block(b, location, 3) == b.children[2].children[0]
+    assert _get_block(b, location, 0) == b
+
+    # location in child[3]
+    location = (600, 610)
+    assert _get_block(b, location, 1) == b.children[3]
+    assert _get_block(b, location, 3) == b.children[3]
+    assert _get_block(b, location, 0) == b
+
+
+def test_one_block_4_children_8_grandkids_4_great_grandkids() -> None:
+
+    b = one_block_4_children_8_grandkids_4_great_grandkids()
+    # position of child[0] is (375, 0)
+    # position of child[1] is (0, 0)
+    # position of child[2] is (0, 375)
+    # position of child[3] is (375, 375)
+
+    # position of child[0].child[0] is (563, 0)
+    location = (600, 40)
+    assert _get_block(b, location, 0) == b
+    assert _get_block(b, location, 1) == b.children[0]
+    assert _get_block(b, location, 2) == b.children[0].children[0]
+    # position of child[0].child[1] is (375, 0)
+    location = (500, 20)
+    assert _get_block(b, location, 0) == b
+    assert _get_block(b, location, 1) == b.children[0]
+    assert _get_block(b, location, 2) == b.children[0].children[1]
+    assert _get_block(b, location, 3) == b.children[0].children[1]
+    # position of child[0].child[2] is (375, 188)
+    location = (500, 200)
+    assert _get_block(b, location, 0) == b
+    assert _get_block(b, location, 1) == b.children[0]
+    assert _get_block(b, location, 2) == b.children[0].children[2]
+    assert _get_block(b, location, 3) == b.children[0].children[2]
+    # position of child[0].child[3] is (563, 188)
+    location = (600, 200)
+    assert _get_block(b, location, 0) == b
+    assert _get_block(b, location, 1) == b.children[0]
+    assert _get_block(b, location, 2) == b.children[0].children[3]
+    assert _get_block(b, location, 3) == b.children[0].children[3]
+
+    # position of child[1].child[0] is (188, 0)
+    location = (200, 20)
+    assert _get_block(b, location, 0) == b
+    assert _get_block(b, location, 1) == b.children[1]
+    assert _get_block(b, location, 2) == b.children[1].children[0]
+    assert _get_block(b, location, 3) == b.children[1].children[0]
+    # position of child[1].child[1] is (0, 0)
+    location = (100, 20)
+    assert _get_block(b, location, 0) == b
+    assert _get_block(b, location, 1) == b.children[1]
+    assert _get_block(b, location, 2) == b.children[1].children[1]
+    assert _get_block(b, location, 3) == b.children[1].children[1]
+    # position of child[1].child[2] is (0, 188)
+    location = (100, 200)
+    assert _get_block(b, location, 0) == b
+    assert _get_block(b, location, 1) == b.children[1]
+    assert _get_block(b, location, 2) == b.children[1].children[2]
+    assert _get_block(b, location, 3) == b.children[1].children[2]
+    # position of child[1].child[3] is (188, 188)
+    location = (200, 200)
+    location1 = (300, 250)
+    location2 = (200, 340)
+    location3 = (330, 315)
+
+    assert _get_block(b, location, 0) == b
+    assert _get_block(b, location, 1) == b.children[1]
+    assert _get_block(b, location, 2) == b.children[1].children[3]
+    assert _get_block(b, location, 3) == b.children[1].children[3].children[1]
+
+    assert _get_block(b, location1, 0) == b
+    assert _get_block(b, location1, 1) == b.children[1]
+    assert _get_block(b, location1, 2) == b.children[1].children[3]
+    assert _get_block(b, location1, 3) == b.children[1].children[3].children[0]
+
+    assert _get_block(b, location2, 0) == b
+    assert _get_block(b, location2, 1) == b.children[1]
+    assert _get_block(b, location2, 2) == b.children[1].children[3]
+    assert _get_block(b, location2, 3) == b.children[1].children[3].children[2]
+
+    assert _get_block(b, location3, 0) == b
+    assert _get_block(b, location3, 1) == b.children[1]
+    assert _get_block(b, location3, 2) == b.children[1].children[3]
+    assert _get_block(b, location3, 3) == b.children[1].children[3].children[3]
+    # position of child[1].child[3].child[0] is (282, 188)
+    # position of child[1].child[3].child[1] is (188, 188)
+    # position of child[1].child[3].child[2] is (188, 282)
+    # position of child[1].child[3].child[3] is (282, 282)
+
+
+def test_create_players_01_smart_players() -> None:
+    assert create_players(0, 0, []) == []
+    assert len(create_players(0, 0, [1])) == 1
+    assert isinstance(create_players(0, 0, [1])[0], SmartPlayer)
+    assert isinstance(create_players(0, 0, [4])[0], SmartPlayer)
+    assert len(create_players(0, 0, [4])) == 1
+    assert create_players(0, 0, [4])[0]._difficulty == 4
+    assert create_players(0, 0, [1])[0]._difficulty == 1
+
+def test_create_players_02_smart_players() -> None:
+    created_players = create_players(0, 0, [1, 7, 5, 3])
+    assert len(created_players) == 4
+    for player in created_players:
+        assert isinstance(player, SmartPlayer)
+    created_players[0]._difficulty == 1
+    created_players[1]._difficulty == 7
+    created_players[2]._difficulty == 5
+    created_players[3]._difficulty == 3
+
+def test_create_players_03_human_player() -> None:
+    created_players = create_players(1, 0, [])
+    assert len(created_players) == 1
+    assert isinstance(created_players[0], HumanPlayer)
+
+    four_created_players = create_players(4, 0, [])
+    assert len(four_created_players) == 4
+    for player in four_created_players:
+        assert isinstance(player, HumanPlayer)
+
+def test_create_players_04_random_players() -> None:
+    created_players = create_players(0, 7, [])
+    assert len(created_players) == 7
+    for player in created_players:
+        assert isinstance(player, RandomPlayer)
+
+def test_create_players_05_mixed_players() -> None:
+    created_players = create_players(2, 3, [5, 6, 8])
+    assert len(created_players) == 8
+    for player in created_players[0:2]:
+        assert isinstance(player, HumanPlayer)
+    for player in created_players[2:5]:
+        assert isinstance(player, RandomPlayer)
+    for player in created_players[5:]:
+        assert isinstance(player, SmartPlayer)
+
+    assert created_players[5]._difficulty == 5
+    assert created_players[6]._difficulty == 6
+    assert created_players[7]._difficulty == 8
 
 if __name__ == '__main__':
     pytest.main(['test_cases.py'])
