@@ -604,11 +604,11 @@ def test_BlobGoal_score_complicated_depth_2_yellow() -> None:
     assert goal.score(b) == 1
 
 
-# def test_generate_goals_length_of_list_returned() -> None:
-#     assert len(generate_goals(1)) == 1
-#     assert len(generate_goals(2)) == 2
-#     assert len(generate_goals(3)) == 3
-#     assert len(generate_goals(4)) == 4
+def test_generate_goals_length_of_list_returned() -> None:
+    assert len(generate_goals(1)) == 1
+    assert len(generate_goals(2)) == 2
+    assert len(generate_goals(3)) == 3
+    assert len(generate_goals(4)) == 4
 
 
 # def test_generate_goals_type_of_goals_in_list_returned() -> None:

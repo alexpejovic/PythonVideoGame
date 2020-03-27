@@ -40,16 +40,12 @@ def generate_goals(num_goals: int) -> List[Goal]:
     """
     pgoals = []
     bgoals = []
-    colours = []
+    colours = COLOUR_LIST.copy()
     for _ in range(num_goals):
-        random_num = random.randint(0, len(COLOUR_LIST)-1)
-        j = 0
-        while j < 1:
-            if COLOUR_LIST[random_num] not in colours:
-                pgoals.append(PerimeterGoal(COLOUR_LIST[random_num]))
-                bgoals.append(BlobGoal(COLOUR_LIST[random_num]))
-                colours.append(COLOUR_LIST[random_num])
-                j += 1
+        random_num = random.randint(0, len(colours)-1)
+        pgoals.append(PerimeterGoal(colours[random_num]))
+        bgoals.append(BlobGoal(colours[random_num]))
+        del colours[random_num]
 
     r = random.randint(0, 1)
     if r == 0:
@@ -57,13 +53,7 @@ def generate_goals(num_goals: int) -> List[Goal]:
     else:
         goal_list = bgoals
 
-    goals = []
-    for _ in range(num_goals):
-        r2 = random.randint(0, len(goal_list) - 1)
-        goals.append(goal_list[r2])
-        del goal_list[r2]
-
-    return goals
+    return goal_list
 
 
 def _flatten(block: Block) -> List[List[Tuple[int, int, int]]]:
