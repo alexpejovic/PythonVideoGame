@@ -115,6 +115,75 @@ def visited(board: Block) -> List[List[int]]:
     return visits
 
 
+# === USE THESE BLOCKS ===
+# you can decide the max depth
+def one_block_four_children_(max_depth: int) -> Block:
+    b = Block((0, 0), 750, None, 0, max_depth)
+    set_children(b, [TEMPTING_TURQUOISE, MELON_MAMBO, REAL_RED, OLD_OLIVE])
+    return b
+
+
+def one_block_sixteen_grandkids_(max_depth: int) -> Block:
+    b = Block((0, 0), 750, None, 0, max_depth)
+    set_children(b, [None, None, None, None])
+    for child in b.children:
+        set_children(child, [TEMPTING_TURQUOISE, MELON_MAMBO,
+                             REAL_RED, OLD_OLIVE])
+    return b
+
+
+def one_block_4_children_8_grandkids_4_great_grandkids_(max_depth: int) -> Block:
+    b = Block((0, 0), 750, None, 0, max_depth)
+    set_children(b, [TEMPTING_TURQUOISE, DAFFODIL_DELIGHT, MELON_MAMBO,
+                     OLD_OLIVE])
+    for i in range(2):
+        b.children[i].colour = None
+        set_children(b.children[i], [TEMPTING_TURQUOISE, MELON_MAMBO,
+                                     REAL_RED, TEMPTING_TURQUOISE])
+    b.children[1].children[3].colour = None
+    set_children(b.children[1].children[3], [OLD_OLIVE,
+                                             OLD_OLIVE, REAL_RED,
+                                             OLD_OLIVE])
+    return b
+
+
+def one_block_4_kids_one_kid_has_4_kids_(max_depth: int) -> Block:
+    b = Block((0, 0), 750, None, 0, max_depth)
+    set_children(b, [TEMPTING_TURQUOISE, MELON_MAMBO, REAL_RED, OLD_OLIVE])
+    b.children[2].colour = None
+    set_children(b.children[2], [TEMPTING_TURQUOISE, MELON_MAMBO,
+                                 REAL_RED, REAL_RED])
+    return b
+
+
+def complicated_block_depth_3_(max_depth: int) -> Block:
+    b = Block((0, 0), 750, None, 0, max_depth)
+    set_children(b, [None, None, None, None])
+    set_children(b.children[0], [TEMPTING_TURQUOISE, OLD_OLIVE,
+                                 REAL_RED, MELON_MAMBO])
+    set_children(b.children[1], [OLD_OLIVE, MELON_MAMBO,
+                                 REAL_RED, None])
+    set_children(b.children[1].children[3], [TEMPTING_TURQUOISE, MELON_MAMBO,
+                                             MELON_MAMBO, REAL_RED])
+    set_children(b.children[2], [OLD_OLIVE, TEMPTING_TURQUOISE, OLD_OLIVE, None])
+    set_children(b.children[2].children[3], [REAL_RED, REAL_RED,
+                                             TEMPTING_TURQUOISE,
+                                             TEMPTING_TURQUOISE])
+    set_children(b.children[3], [None, OLD_OLIVE, MELON_MAMBO,
+                                 TEMPTING_TURQUOISE])
+    set_children(b.children[3].children[0], [TEMPTING_TURQUOISE, REAL_RED,
+                                             MELON_MAMBO, REAL_RED])
+    return b
+
+
+def complicated_block_depth_2_(max_depth: int) -> Block:
+    b = Block((0, 0), 750, None, 0, max_depth)
+    set_children(b, [REAL_RED, None, OLD_OLIVE, BLACK])
+    set_children(b.children[1], [REAL_RED, OLD_OLIVE, MELON_MAMBO, BLACK])
+    return b
+
+
+
 # === TESTS ===
 
 def test_block_to_squares_lone_block() -> None:
@@ -614,8 +683,8 @@ def test_generate_goals_length_of_list_returned() -> None:
 def test_generate_goals_type_of_goals_in_list_returned() -> None:
     g1 = generate_goals(1)
     g2 = generate_goals(2)
-    # g3 = generate_goals(3)
-    # g4 = generate_goals(4)
+    g3 = generate_goals(3)
+    g4 = generate_goals(4)
 
     if not isinstance(g1[0], BlobGoal):
         assert isinstance(g1[0], PerimeterGoal)
@@ -628,9 +697,23 @@ def test_generate_goals_type_of_goals_in_list_returned() -> None:
         else:
             assert isinstance(goal, BlobGoal)
 
+    for goal in g3:
+        if not isinstance(goal, BlobGoal):
+            assert isinstance(goal, PerimeterGoal)
+        else:
+            assert isinstance(goal, BlobGoal)
+
+    for goal in g4:
+        if not isinstance(goal, BlobGoal):
+            assert isinstance(goal, PerimeterGoal)
+        else:
+            assert isinstance(goal, BlobGoal)
+
 def test_generate_goals_each_colour_goal_occurs_once() -> None:
     g1 = generate_goals(1)
     g2 = generate_goals(2)
+    g3 = generate_goals(3)
+    g4 = generate_goals(4)
 
     colours_1 = []
     for goal in g1:
@@ -639,9 +722,24 @@ def test_generate_goals_each_colour_goal_occurs_once() -> None:
         assert colours_1.count(colour) == 1
 
     colours_2 = []
-    for goal in g1:
+    for goal in g2:
+        assert goal.colour in COLOUR_LIST
         colours_2.append(goal.colour)
     for colour in colours_2:
+        assert colours_2.count(colour) == 1
+
+    colours_3 = []
+    for goal in g3:
+        assert goal.colour in COLOUR_LIST
+        colours_2.append(goal.colour)
+    for colour in colours_3:
+        assert colours_2.count(colour) == 1
+
+    colours_4 = []
+    for goal in g4:
+        assert goal.colour in COLOUR_LIST
+        colours_2.append(goal.colour)
+    for colour in colours_4:
         assert colours_2.count(colour) == 1
 
 
