@@ -220,13 +220,15 @@ class Block:
             if r < math.exp(-0.25 * level):
                 self.colour = None
                 for i in range(4):
-                    colour = COLOUR_LIST[random.randint(len(COLOUR_LIST) - 1)]
+                    colour = COLOUR_LIST[random.randint(0,
+                                                        len(COLOUR_LIST) - 1)]
                     child = Block(child_positions[i], child_size, colour,
                                   level + 1, self.max_depth)
                     child.smash()
                     self.children.append(child)
             else:
-                self.colour = COLOUR_LIST[random.randint(len(COLOUR_LIST) - 1)]
+                self.colour = COLOUR_LIST[random.randint(0,
+                                                         len(COLOUR_LIST) - 1)]
 
         return True
 
@@ -325,8 +327,10 @@ class Block:
             for child in self.children:
                 d[child.colour] += 1
 
+            values = list(d.values())
+
             for colour in d:
-                if d[colour] > 2:
+                if d[colour] == max(values) and values.count(d[colour]) == 1:
                     self.children = []
                     self.colour = colour
                     return True
