@@ -220,13 +220,13 @@ class Block:
             if r < math.exp(-0.25 * level):
                 self.colour = None
                 for i in range(4):
-                    colour = COLOUR_LIST[random.randint(0, 3)]
+                    colour = COLOUR_LIST[random.randint(len(COLOUR_LIST) - 1)]
                     child = Block(child_positions[i], child_size, colour,
                                   level + 1, self.max_depth)
                     child.smash()
                     self.children.append(child)
             else:
-                self.colour = COLOUR_LIST[random.randint(0, 3)]
+                self.colour = COLOUR_LIST[random.randint(len(COLOUR_LIST) - 1)]
 
         return True
 

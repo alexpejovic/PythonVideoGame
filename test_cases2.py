@@ -135,6 +135,24 @@ def test_rotate_lone() -> None:
     assert b == b
 
 
+def test_rotate_logic() -> None:
+    b = complicated_block_depth_3_(3)
+    b2 = complicated_block_depth_3_(3)
+    b.rotate(1)
+    b2.rotate(3)
+    b2.rotate(3)
+    b2.rotate(3)
+    assert b == b2
+
+
+def test_non_rotation() -> None:
+    b = one_block_4_kids_one_kid_has_4_kids_(5)
+    assert not b.children[0].rotate(1)
+    assert b.children[2].rotate(1)
+    assert b.children[2].children[0].colour == MELON_MAMBO
+    assert b.children[2].children[1].colour == REAL_RED
+    assert b.children[2].children[2].colour == REAL_RED
+    assert b.children[2].children[3].colour == TEMPTING_TURQUOISE
 
 
 
