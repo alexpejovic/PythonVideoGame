@@ -248,7 +248,8 @@ class BlobGoal(Goal):
         must create a connected set of blocks of a single colour
         """
         c = colour_name(self.colour)
-        return 'Create the largest possible blob of colour ' + c + '.'
+        return 'Create the largest possible set of connected ' \
+               'blocks of colour ' + c + '.'
 
 
 if __name__ == '__main__':
