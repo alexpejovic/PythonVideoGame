@@ -102,9 +102,8 @@ def complicated_block_depth_2_(max_depth: int) -> Block:
     set_children(b.children[1], [REAL_RED, OLD_OLIVE, MELON_MAMBO, BLACK])
     return b
 
+
 # TESTS FOR CREATE_COPY #
-
-
 def test_create_copy_simple() -> None:
     b = lone_block()
     b_copy = b.create_copy()
@@ -154,6 +153,82 @@ def test_non_rotation() -> None:
     assert b.children[2].children[2].colour == REAL_RED
     assert b.children[2].children[3].colour == TEMPTING_TURQUOISE
 
+
+# TESTS FOR SWAP #
+def test_swap_lone() -> None:
+    b = lone_block()
+    assert not b.swap(0)
+    b2 = lone_block()
+    assert b == b2
+    assert b is not b2
+
+
+def test_swap_logic() -> None:
+    board = complicated_block_depth_3_(3)
+    b = board.children[1].create_copy()
+    b2 = board.children[1].create_copy()
+    assert board.children[1].swap(0)
+    assert b.swap(0)
+    assert board.children[1] == b
+    assert board.children[1].swap(0)
+    assert board.children[1] == b2
+
+
+def test_non_swap() -> None:
+    board = one_block_4_kids_one_kid_has_4_kids_(2)
+    board_copy = one_block_4_kids_one_kid_has_4_kids_(2)
+    assert not board.children[1].swap(1)
+    assert board == board_copy
+    assert board.children[2].swap(1)
+    assert board.children[2].children[0].colour == REAL_RED
+    assert board.children[2].children[1].colour == REAL_RED
+    assert board.children[2].children[2].colour == MELON_MAMBO
+    assert board.children[2].children[3].colour == TEMPTING_TURQUOISE
+
+
+# TESTS FOR PAINT #
+def test_paint_lone() -> None:
+    b = lone_block()
+    assert not b.paint(REAL_RED)
+    assert b.paint(TEMPTING_TURQUOISE)
+    assert b.colour == TEMPTING_TURQUOISE
+
+
+def test_paint_depth() -> None:
+    board = one_block_four_children_(1)
+    board2 = one_block_four_children_(2)
+    assert board.children[0].paint(MELON_MAMBO)
+    assert not board.children[1].paint(MELON_MAMBO)
+    assert not board2.children[0].paint(MELON_MAMBO)
+    assert not board2.children[1].paint(MELON_MAMBO)
+
+
+def test_non_paint() -> None:
+    board = one_block_sixteen_grandkids_(2)
+    board_copy = one_block_sixteen_grandkids_(2)
+    for i in range(4):
+        assert not board.children[i].paint(REAL_RED)
+
+    assert board == board_copy
+
+
+# TESTS FOR COMBINE #
+def test_combine_lone() -> None:
+    b = lone_block()
+    b2 = lone_block()
+    assert not b.combine()
+    assert b == b2
+
+
+def test_combine_depth() -> None:
+    board = one_block_4_children_8_grandkids_4_great_grandkids_(3)
+    board2 = one_block_4_children_8_grandkids_4_great_grandkids_(4)
+    assert board.children[1].children[3].colour is None
+    assert board.children[1].children[3].combine()
+    assert board.children[1].children[3].colour == OLD_OLIVE
+    assert board2.children[1].children[3].colour is None
+    assert not board2.children[1].children[3].combine()
+    assert board2.children[1].children[3].colour is None
 
 
 if __name__ == '__main__':
