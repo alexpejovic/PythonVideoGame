@@ -233,7 +233,8 @@ class HumanPlayer(Player):
 def _is_move_valid(player: Player, block: Block,
                    action: Tuple[str, Optional[int]]) -> bool:
     """ Performs <action> on <block> and returns True if that action was
-    successful, False otherwise.
+    successful, return False otherwise. If the action == PAINT, use the player's
+    <player> goal colour, to paint the block.
 
     ===Precondition===
     <action> represents a player action other than PASS
