@@ -123,7 +123,8 @@ class PerimeterGoal(Goal):
     """ A player's perimeter goal in the game Blocky.
 
     A Perimeter goal is the goal of having a certain colour appear on the
-    perimeter of the Blocky board as often as possible.
+    perimeter of the Blocky board as often as possible. This means having the
+    most possible unit cells of of that colour on the perimeter. 
 
     This is a child class of Goal, and it adds no extra attributes.
     """
@@ -174,7 +175,7 @@ class BlobGoal(Goal):
 
     This class represents the goal of having one large blob of a certain
     colour on the Blocky board. A "Blob" is a series of blocks whose sides
-    touch.
+    touch, and that have the same colour.
 
     This is a child class of Goal, and it has no extra attributes.
     """
