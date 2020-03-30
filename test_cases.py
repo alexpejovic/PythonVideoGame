@@ -986,6 +986,7 @@ def test_create_players_01_smart_players() -> None:
     assert create_players(0, 0, [4])[0]._difficulty == 4
     assert create_players(0, 0, [1])[0]._difficulty == 1
 
+
 def test_create_players_02_smart_players() -> None:
     created_players = create_players(0, 0, [1, 7, 5, 3])
     assert len(created_players) == 4
@@ -995,6 +996,7 @@ def test_create_players_02_smart_players() -> None:
     created_players[1]._difficulty == 7
     created_players[2]._difficulty == 5
     created_players[3]._difficulty == 3
+
 
 def test_create_players_03_human_player() -> None:
     created_players = create_players(1, 0, [])
@@ -1006,11 +1008,13 @@ def test_create_players_03_human_player() -> None:
     for player in four_created_players:
         assert isinstance(player, HumanPlayer)
 
+
 def test_create_players_04_random_players() -> None:
     created_players = create_players(0, 7, [])
     assert len(created_players) == 7
     for player in created_players:
         assert isinstance(player, RandomPlayer)
+
 
 def test_create_players_05_mixed_players() -> None:
     created_players = create_players(2, 3, [5, 6, 8])
@@ -1025,6 +1029,186 @@ def test_create_players_05_mixed_players() -> None:
     assert created_players[5]._difficulty == 5
     assert created_players[6]._difficulty == 6
     assert created_players[7]._difficulty == 8
+
+
+def test_swap_blocks_with_no_children() -> None:
+    lone = lone_block()
+    child1 = one_block_four_children().children[0]
+    child2 = one_block_four_children().children[2]
+    four_kids_child = one_block_4_kids_one_kid_has_4_kids().children[1]
+    block3 = one_block_4_children_8_grandkids_4_great_grandkids().children[1].children[3].children[1]
+    block16 = one_block_sixteen_grandkids().children[2].children[1]
+    assert not lone.swap(0)
+    assert not lone.swap(1)
+    assert not child1.swap(0)
+    assert not child1.swap(1)
+    assert not child2.swap(0)
+    assert not child2.swap(1)
+    assert not four_kids_child.swap(0)
+    assert not four_kids_child.swap(1)
+    assert not block3.swap(0)
+    assert not block3.swap(1)
+    assert not block16.swap(0)
+    assert not block16.swap(1)
+
+
+def test_swap_one_block_four_kids() -> None:
+    b = one_block_four_children()
+    assert b.swap(1)
+    assert _flatten(b) == [[(REAL_RED), (MELON_MAMBO)], [(OLD_OLIVE), (TEMPTING_TURQUOISE)]]
+    assert _block_to_squares(b) == [(OLD_OLIVE, (375, 0), 375),
+                                    (REAL_RED, (0, 0), 375),
+                                    (MELON_MAMBO, (0, 375), 375),
+                                    (TEMPTING_TURQUOISE, (375, 375), 375)]
+
+    assert b.swap(0)
+    assert _flatten(b) == [[(OLD_OLIVE), (TEMPTING_TURQUOISE)], [(REAL_RED), (MELON_MAMBO)]]
+
+
+def test_swap_one_block_16_grandkids() -> None:
+    b = one_block_sixteen_grandkids()
+    flatten = _flatten(b)
+    assert b.swap(1)
+    assert _flatten(b) == flatten
+
+    assert b.swap(0)
+    assert _flatten(b) == flatten
+
+
+def test_swap_one_block_4_kids_8_grandkids_4_greatgrandkids() -> None:
+    b = one_block_4_children_8_grandkids_4_great_grandkids()
+    child0 = b.children[0]
+    child1 = b.children[1]
+    child2 = b.children[2]
+    child3 = b.children[3]
+
+    assert child0.swap(0)
+    assert _flatten(b) == \
+        [[(MELON_MAMBO), (MELON_MAMBO), (REAL_RED), (REAL_RED), (MELON_MAMBO),
+          (MELON_MAMBO), (MELON_MAMBO), (MELON_MAMBO)],
+         [(MELON_MAMBO), (MELON_MAMBO), (REAL_RED), (REAL_RED), (MELON_MAMBO),
+          (MELON_MAMBO), (MELON_MAMBO), (MELON_MAMBO)],
+         [(TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE), (OLD_OLIVE), (REAL_RED),
+          (MELON_MAMBO), (MELON_MAMBO), (MELON_MAMBO), (MELON_MAMBO)],
+         [(TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE), (OLD_OLIVE), (OLD_OLIVE),
+          (MELON_MAMBO), (MELON_MAMBO), (MELON_MAMBO), (MELON_MAMBO)],
+         [(TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE),
+          (OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE)],
+         [(TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE),
+          (OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE)],
+         [(MELON_MAMBO), (MELON_MAMBO), (REAL_RED), (REAL_RED),
+          (OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE)],
+         [(MELON_MAMBO), (MELON_MAMBO), (REAL_RED), (REAL_RED),
+          (OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE)]]
+    assert child1.swap(1)
+    assert _flatten(child1) == [[(REAL_RED), (REAL_RED), (MELON_MAMBO), (MELON_MAMBO)],
+                                [(REAL_RED), (REAL_RED), (MELON_MAMBO), (MELON_MAMBO)],
+                                [(OLD_OLIVE), (REAL_RED), (TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE)],
+                                [(OLD_OLIVE), (OLD_OLIVE), (TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE)]]
+    assert not child2.swap(1)
+    assert not child3.swap(1)
+    child1 = one_block_4_children_8_grandkids_4_great_grandkids().children[1]
+    assert child1.children[3].swap(0)
+    assert _flatten(child1.children[3]) == \
+        [[(OLD_OLIVE), (OLD_OLIVE)], [(OLD_OLIVE), (REAL_RED)]]
+
+
+def test_one_block_4_kids_one_kid_has_4_kids() -> None:
+    b = one_block_4_kids_one_kid_has_4_kids()
+    assert not b.children[0].swap(0)
+    assert not b.children[1].swap(0)
+    assert not b.children[3].swap(1)
+
+    assert b.children[2].swap(1)
+    assert _flatten(b.children[2]) == \
+        [[(REAL_RED), (MELON_MAMBO)], [(REAL_RED), (TEMPTING_TURQUOISE)]]
+
+
+def test_rotate_block_has_no_children() -> None:
+    assert not lone_block().rotate(1)
+    assert not one_block_four_children().children[1].rotate(3)
+    assert not one_block_sixteen_grandkids().children[0].children[3].rotate(3)
+    assert not one_block_4_children_8_grandkids_4_great_grandkids().children[0].children[2].rotate(3)
+    assert not one_block_4_children_8_grandkids_4_great_grandkids().children[1].children[2].rotate(3)
+    assert not one_block_4_children_8_grandkids_4_great_grandkids().children[1].children[3].children[1].rotate(3)
+    assert not one_block_4_children_8_grandkids_4_great_grandkids().children[2].rotate(1)
+    assert not one_block_4_children_8_grandkids_4_great_grandkids().children[3].rotate(3)
+    assert not one_block_4_kids_one_kid_has_4_kids().children[0].rotate(3)
+
+
+def test_rotate_one_block_has_four_kids_one_kid_has_four_kids() -> None:
+    assert one_block_4_kids_one_kid_has_4_kids().rotate(1)
+    b = one_block_4_kids_one_kid_has_4_kids()
+    b.rotate(1)
+    assert _flatten(b) == \
+        [[(REAL_RED), (REAL_RED), (OLD_OLIVE), (OLD_OLIVE)],
+         [(MELON_MAMBO), (TEMPTING_TURQUOISE), (OLD_OLIVE), (OLD_OLIVE)],
+         [(MELON_MAMBO), (MELON_MAMBO), (TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE)],
+         [(MELON_MAMBO), (MELON_MAMBO), (TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE)]]
+
+
+def test_rotate_one_block_4_kids_8_grandkids_4_great_grandkids() -> None:
+    b = one_block_4_children_8_grandkids_4_great_grandkids()
+    assert b.rotate(3)
+    assert _flatten(b) == \
+        [[(TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE), (MELON_MAMBO),
+          (MELON_MAMBO), (TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE),
+          (MELON_MAMBO), (MELON_MAMBO)],
+         [(TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE), (MELON_MAMBO),
+          (MELON_MAMBO), (TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE),
+          (MELON_MAMBO), (MELON_MAMBO)],
+         [(TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE), (REAL_RED),
+          (REAL_RED), (OLD_OLIVE), (OLD_OLIVE), (REAL_RED), (REAL_RED)],
+         [(TEMPTING_TURQUOISE), (TEMPTING_TURQUOISE), (REAL_RED),
+          (REAL_RED), (OLD_OLIVE), (REAL_RED), (REAL_RED), (REAL_RED)],
+         [(OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE), (MELON_MAMBO),
+          (MELON_MAMBO), (MELON_MAMBO), (MELON_MAMBO)],
+         [(OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE), (MELON_MAMBO),
+          (MELON_MAMBO), (MELON_MAMBO), (MELON_MAMBO)],
+         [(OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE), (MELON_MAMBO),
+          (MELON_MAMBO), (MELON_MAMBO), (MELON_MAMBO)],
+         [(OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE), (OLD_OLIVE), (MELON_MAMBO),
+          (MELON_MAMBO), (MELON_MAMBO), (MELON_MAMBO)]]
+
+
+def test_paint() -> None:
+    assert not lone_block().paint(REAL_RED)
+    b = lone_block()
+    assert b.paint(TEMPTING_TURQUOISE)
+    assert b.colour == TEMPTING_TURQUOISE
+
+    assert not one_block_four_children().paint(REAL_RED)
+    assert not one_block_four_children().children[0].paint(TEMPTING_TURQUOISE)
+    assert one_block_four_children().children[0].paint(REAL_RED)
+
+    assert not one_block_4_children_8_grandkids_4_great_grandkids().children[1].children[2].paint(TEMPTING_TURQUOISE)
+    assert not one_block_4_children_8_grandkids_4_great_grandkids().children[1].children[2].paint(REAL_RED)
+
+    b = lone_block()
+    b.max_depth = 1
+    assert not b.paint(TEMPTING_TURQUOISE)
+
+
+def test_combine() -> None:
+    assert not one_block_sixteen_grandkids().combine()
+    for child in one_block_sixteen_grandkids().children:
+        assert child.combine() is False
+
+    assert one_block_four_children().combine() is False
+    assert one_block_4_children_8_grandkids_4_great_grandkids().children[0].combine() is False
+    assert one_block_4_children_8_grandkids_4_great_grandkids().children[1].combine() is False
+    b = one_block_4_children_8_grandkids_4_great_grandkids()
+    assert b.children[1].children[3].combine()
+    assert b.children[1].children[3].colour == OLD_OLIVE
+    assert b.children[1].children[3].children == []
+
+    b = one_block_4_kids_one_kid_has_4_kids()
+    assert b.children[2].combine()
+    assert b.children[2].colour == REAL_RED
+    assert b.children[2].children == []
+
+
+
 
 if __name__ == '__main__':
     pytest.main(['test_cases.py'])
