@@ -162,16 +162,18 @@ def _create_move(action: Tuple[str, Optional[int]], block: Block) -> \
 
 
 class HumanPlayer(Player):
-    """A human player.
+    """A human player in the game Blocky.
+
+    === Private Attributes ===
+    _level:
+        The level of the Block that the user selected most recently.
+    _desired_action:
+        The most recent action that the user is attempting to do.
+
+    == Representation Invariants concerning the private attributes ==
+        _level >= 0
     """
-    # === Private Attributes ===
-    # _level:
-    #     The level of the Block that the user selected most recently.
-    # _desired_action:
-    #     The most recent action that the user is attempting to do.
-    #
-    # == Representation Invariants concerning the private attributes ==
-    #     _level >= 0
+
     _level: int
     _desired_action: Optional[Tuple[str, Optional[int]]]
 
@@ -311,13 +313,14 @@ class RandomPlayer(Player):
 
 class SmartPlayer(Player):
     """ A smart player in the game Blocky.
+
     === Private Attributes ===
     _proceed:
       True when the player should make a move, False when the player should
       wait.
     _difficulty:
-      The difficulty level which indicates how hard it is to play against this
-      player
+      The player's difficulty level which indicates how hard it is to play
+      against this player
     """
     _difficulty: int
     _proceed: bool
