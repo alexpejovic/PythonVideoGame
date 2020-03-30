@@ -3,7 +3,7 @@ from typing import List, Tuple, Optional, Union
 from block import Block
 from blocky import _block_to_squares
 from goal import BlobGoal, PerimeterGoal, _flatten, generate_goals, Goal
-from player import _get_block, create_players, Player, SmartPlayer, RandomPlayer, HumanPlayer
+from player import _is_move_valid, _get_block, create_players, Player, SmartPlayer, RandomPlayer, HumanPlayer
 from renderer import Renderer
 from settings import COLOUR_LIST
 WHITE = (255, 255, 255)
@@ -229,6 +229,45 @@ def test_combine_depth() -> None:
     assert board2.children[1].children[3].colour is None
     assert not board2.children[1].children[3].combine()
     assert board2.children[1].children[3].colour is None
+
+
+# TESTS FOR GENERATE MOVE #
+def test_returns_block() -> None:
+    """This one fails a lot because block.combine() is buggy because we are
+    using colours that are not in COLOUR_LIST, something which they do not
+    test for.
+    """
+    gr = BlobGoal(REAL_RED)
+    gp = PerimeterGoal(MELON_MAMBO)
+    board = one_block_four_children_(1)
+    rp = RandomPlayer(0, gr)
+    sp = SmartPlayer(1, gp, 10)
+    rp._proceed = True
+    sp._proceed = True
+    move_block_rp = rp.generate_move(board)[2]
+    move_block_sp = sp.generate_move(board)[2]
+    assert move_block_rp == board or move_block_rp in board.children
+    assert move_block_sp == board or move_block_sp in board.children
+
+
+def test_score_is_greater() -> None:
+    """Same shit w last method"""
+    gp = PerimeterGoal(MELON_MAMBO)
+    board = one_block_four_children_(1)
+    sp = SmartPlayer(1, gp, 4)
+    sp._proceed = True
+    move = sp.generate_move(board)
+    score = gp.score(board)
+    if move[0] != 'pass':
+        assert _is_move_valid(sp, move[2], (move[0], move[1]))
+    score2 = gp.score(board)
+    if move[0] != 'pass':
+        assert score2 > score
+    else:
+        assert score2 == score
+
+
+
 
 
 if __name__ == '__main__':

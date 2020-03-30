@@ -34,7 +34,8 @@ DAFFODIL_DELIGHT = (255, 211, 92)
 TEMPTING_TURQUOISE = (75, 196, 213)
 
 # A pallette of the colours we use in the game
-COLOUR_LIST = [PACIFIC_POINT, REAL_RED, OLD_OLIVE, DAFFODIL_DELIGHT]
+COLOUR_LIST = [PACIFIC_POINT, REAL_RED, OLD_OLIVE, DAFFODIL_DELIGHT,
+               MELON_MAMBO, TEMPTING_TURQUOISE]
 
 # The game board will be a square with this size.
 BOARD_SIZE = 750
