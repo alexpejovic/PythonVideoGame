@@ -124,7 +124,7 @@ class PerimeterGoal(Goal):
 
     A Perimeter goal is the goal of having a certain colour appear on the
     perimeter of the Blocky board as often as possible. This means having the
-    most possible unit cells of of that colour on the perimeter. 
+    most possible unit cells of of that colour on the perimeter.
 
     This is a child class of Goal, and it adds no extra attributes.
     """

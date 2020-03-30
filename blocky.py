@@ -122,6 +122,8 @@ class GameData:
 
 class GameState:
     """One of the different states that a Blocky game can be in.
+
+    This is an abstract class. Only child classes should be instantiated.
     """
 
     def process_event(self, event: pygame.event.Event) -> None:
@@ -144,16 +146,18 @@ class GameState:
 
 class MainState(GameState):
     """A GameState that manages the moves made by different players in Blocky.
+
+    === Private Attributes ===
+    _turn:
+      The current turn.
+    _data:
+      A reference to the shared GameData.
+    _current_player_index:
+      The index of the current player in GameData.players.
+    _current_score:
+      The score of the current player, including penalties.
     """
-    # === Private Attributes ===
-    # _turn:
-    #   The current turn.
-    # _data:
-    #   A reference to the shared GameData.
-    # _current_player_index:
-    #   The index of the current player in GameData.players.
-    # _current_score:
-    #   The score of the current player, including penalties.
+
     _turn: int
     _data: GameData
     _current_player_index: int
@@ -260,18 +264,20 @@ class MainState(GameState):
 class AnimateMoveState(GameState):
     """A GameState that animates a move made by a player before returning to its
     parent GameState.
+
+    === Private Attributes ===
+    _parent:
+      The GameState to return to after the animation has completed.
+    _player_id:
+      The ID of the player whose move is being animated.
+    _move:
+      The move being animated.
+    _start_time:
+      The time that the animation started.
+    _background:
+      The board to display behind the animation.
     """
-    # === Private Attributes ===
-    # _parent:
-    #   The GameState to return to after the animation has completed.
-    # _player_id:
-    #   The ID of the player whose move is being animated.
-    # _move:
-    #   The move being animated.
-    # _start_time:
-    #   The time that the animation started.
-    # _background:
-    #   The board to display behind the animation.
+
     _parent: GameState
     _player_id: int
     _move: Tuple[str, Optional[int], Block]
@@ -322,12 +328,14 @@ class AnimateMoveState(GameState):
 
 class GameOverState(GameState):
     """A GameState that is displayed when the game is over.
+
+    === Private Attributes ===
+    _scores:
+      A list of tuples containing each player ID, goal score, and penalty
+    _winner:
+      The ID of the winning player
     """
-    # === Private Attributes ===
-    # _scores:
-    #   A list of tuples containing each player ID, goal score, and penalty
-    # _winner:
-    #   The ID of the winning player
+
     _scores: List[Tuple[int, int, int]]
     _winner: int
 
