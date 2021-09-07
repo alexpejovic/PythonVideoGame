@@ -1,2 +1,3 @@
 # CSC148 Assignment 2
- Sofija and Alex's vibe sesh
+
+Implementation of a video game in Python by Sofija and Alex.
